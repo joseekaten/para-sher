@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Libro Especial para Sherly</title>
+  <style>
+    body {
+      margin: 0;
+      background: #f0f0f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      font-family: 'Georgia', serif;
+    }
+    .book {
+      width: 700px;
+      height: 500px;
+      background: #fff;
+      border: 12px solid #8B4513; /* Encarnación del lomo en tono café */
+      box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+      position: relative;
+      overflow: hidden;
+      border-radius: 4px;
+    }
+    /* Contenedor de la extensión (spread) del libro */
+    .spread-container {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      transition: opacity 0.5s;
+    }
+    /* Para spreads que son dobles (páginas izquierda y derecha) */
+    .spread-double {
+      display: flex;
+      width: 100%;
+      height: 100%;
+    }
+    .page {
+      width: 50%;
+      padding: 30px;
+      box-sizing: border-box;
+      background: 
+        linear-gradient(transparent 95%, rgba(0,0,0,0.03) 95%);
+      overflow-y: auto;
+      font-size: 1.1em;
+      line-height: 1.6;
+      color: #333;
+    }
+    .left-page {
+      border-right: 1px solid #ccc;
+    }
+    /* Para spreads de una sola página (portada y contraportada) */
+    .spread-single {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+      padding: 20px;
+      box-sizing: border-box;
+      text-align: center;
+      background: 
+        linear-gradient(transparent 95%, rgba(0,0,0,0.03) 95%);
+    }
+    .spread-single h1, .spread-single h2 {
+      margin: 0;
+    }
+    /* Botones de navegación */
+    .nav-buttons {
+      position: absolute;
+      bottom: 15px;
+      width: 100%;
+      text-align: center;
+    }
+    .nav-buttons button {
+      padding: 10px 20px;
+      margin: 0 10px;
+      background: #8B4513;
+      border: none;
+      color: #fff;
+      font-size: 1em;
+      cursor: pointer;
+      border-radius: 3px;
+      transition: background 0.3s;
+    }
+    .nav-buttons button:hover {
+      background: #6b2d0a;
+    }
+    .nav-buttons button:disabled {
+      background: #ccc;
+      cursor: default;
+    }
+  </style>
+</head>
+<body>
+  <div class="book" id="book">
+    <div class="spread-container" id="spreadContainer">
+      <!-- El contenido se carga dinámicamente -->
+    </div>
+    <div class="nav-buttons">
+      <button id="prevBtn">Anterior</button>
+      <button id="nextBtn">Siguiente</button>
+    </div>
+  </div>
+
+  <script>
+    // Creamos un array con el contenido de cada spread.
+    // Spread 0: Portada (página única)
+    // Spread 1: Doble: Capítulo 1 (izquierda) y Capítulo 2 (derecha)
+    // Spread 2: Doble: Capítulo 3 (izquierda) y Capítulo 4 (derecha)
+    // Spread 3: Contraportada (página única)
+    const spreads = [
+      // Portada
+      `<div class="spread-single">
+         <div>
+           <h1>Para ti, Sherly</h1>
+           <p>Un viaje de emociones y palabras</p>
+           <p>(Pulsa "Siguiente" para adentrarte en mi mundo)</p>
+         </div>
+       </div>`,
+      // Spread doble: Capítulo 1 y Capítulo 2
+      `<div class="spread-double">
+         <div class="page left-page">
+           <h2>Capítulo 1: Quién soy</h2>
+           <p>
+             En el silencio de mis pensamientos, nace la melodía de mi ser.
+             Soy alguien que busca en cada latido la inspiración para escribir
+             lo que lleva el alma. <em>"La esencia se revela en la quietud del alma."</em>
+           </p>
+           <p>
+             Cada palabra es un reflejo de mis sueños, y a través de ellas intento
+             mostrarte mi verdad más íntima.
+           </p>
+         </div>
+         <div class="page">
+           <h2>Capítulo 2: Momentos Inolvidables</h2>
+           <p>
+             Cada instante, por efímero que parezca, se transforma en eternidad
+             cuando se vive con intensidad. <em>"El tiempo se funde en la luz de un suspiro."</em>
+           </p>
+           <p>
+             En la risa de un atardecer y en el murmullo de un secreto, se esconde
+             la magia de lo vivido.
+           </p>
+         </div>
+       </div>`,
+      // Spread doble: Capítulo 3 y Capítulo 4
+      `<div class="spread-double">
+         <div class="page left-page">
+           <h2>Capítulo 3: Sueños y Esperanzas</h2>
+           <p>
+             Los sueños son las puertas a universos ocultos, donde cada anhelo
+             se transforma en una promesa de luz. <em>"La esperanza se teje con hilos de estrellas."</em>
+           </p>
+           <p>
+             En el vasto cielo de la imaginación, cada sueño es un puente hacia
+             lo posible.
+           </p>
+         </div>
+         <div class="page">
+           <h2>Capítulo 4: Palabras al Corazón</h2>
+           <p>
+             Cada palabra es un eco del sentir, un susurro que conecta dos almas.
+             <em>"En el lenguaje del amor, hasta el silencio es poesía."</em>
+           </p>
+           <p>
+             Te escribo con la esperanza de que estas letras encuentren un rincón
+             en tu corazón donde florezca la complicidad.
+           </p>
+         </div>
+       </div>`,
+      // Contraportada
+      `<div class="spread-single">
+         <div>
+           <h2>Contraportada</h2>
+           <p>
+             Este libro es un susurro de emociones, un compendio de instantes y sueños
+             que se funden en la poesía de la vida. Cada página es un testimonio del
+             camino recorrido y de lo que aún anhelamos descubrir.
+           </p>
+           <p>Gracias por acompañarme en este viaje.</p>
+         </div>
+       </div>`
+    ];
+    
+    let currentSpread = 0;
+    const spreadContainer = document.getElementById('spreadContainer');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+
+    // Función para actualizar el contenido del spread actual
+    function updateSpread() {
+      spreadContainer.style.opacity = 0;
+      setTimeout(() => {
+        spreadContainer.innerHTML = spreads[currentSpread];
+        spreadContainer.style.opacity = 1;
+      }, 300);
+      
+      // Controlamos la habilitación de los botones
+      prevBtn.disabled = (currentSpread === 0);
+      nextBtn.disabled = (currentSpread === spreads.length - 1);
+    }
+    
+    // Inicializamos con la portada
+    updateSpread();
+    
+    prevBtn.addEventListener('click', () => {
+      if (currentSpread > 0) {
+        currentSpread--;
+        updateSpread();
+      }
+    });
+    
+    nextBtn.addEventListener('click', () => {
+      if (currentSpread < spreads.length - 1) {
+        currentSpread++;
+        updateSpread();
+      }
+    });
+  </script>
+</body>
+</html>
